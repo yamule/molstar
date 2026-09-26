@@ -5,7 +5,7 @@
  */
 
 import { Structure, StructureElement, StructureProperties as SP, Unit } from '../../mol-model/structure';
-import { PDBData, PDBAtom, PDBResidue } from './lib/index.js';
+import { PDBData, PDBAtom, PDBResidue } from './surfstampjs/index.js';
 
 export interface StructureToPDBOptions {
     /** drop water molecules */

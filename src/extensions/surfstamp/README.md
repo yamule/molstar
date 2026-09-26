@@ -8,7 +8,7 @@ Use *Add Representation → SurfStamp* on a structure component (or `plugin.buil
 
 ## Layout
 
-- `lib/` – SurfStampJS core (plain JavaScript, no dependencies; Apache-2.0, see `lib/LICENSE`):
+- `surfstampjs/` – SurfStampJS core (plain JavaScript, no dependencies; Apache-2.0, see `surfstampjs/LICENSE`):
   surface generation (`surface.js`), face→residue assignment (`mapping.js`, `decorate.js`), UV unwrapping
   (`unwrap/`), texture painting (`texture/`). `index.js` is the entry point. The browser build replaces the
   TrueType loader with `CanvasFont` (Canvas 2D API) and runs the long pipelines as generators so that progress

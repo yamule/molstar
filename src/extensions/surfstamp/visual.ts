@@ -16,7 +16,7 @@ import { VisualUpdateState } from '../../mol-repr/util';
 import { ValueCell } from '../../mol-util';
 import { Color } from '../../mol-util/color';
 import { structureToPDBData, SurfStampAtom } from './structure';
-import * as SurfStampJS from './lib/index.js';
+import * as SurfStampJS from './surfstampjs/index.js';
 
 export const SurfStampColorSchemes = [
     ['clustalx', 'Residue type (ClustalX-like)'],
@@ -89,14 +89,15 @@ function luminance(c: number[]) { return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 
 function applyThemeColors(decorations: Decoration[], structure: Structure, theme: Theme) {
     const l = StructureElement.Location.create(structure);
     const { unitIndices, elementIndices } = structure.serialMapping;
+    const themeColor = 'color' in theme.color && theme.color.color ? theme.color.color : undefined;
     for (const d of decorations) {
         d.noBackground = true;
         const atom: SurfStampAtom | undefined = d.atom ?? d.residue?.atoms?.[0];
         let bg = [128, 128, 128];
-        if (atom) {
+        if (atom && themeColor) {
             l.unit = structure.units[unitIndices[atom.serialIndex]];
             l.element = elementIndices[atom.serialIndex];
-            const c = theme.color.color(l, false);
+            const c = themeColor(l, false);
             bg = Color.toRgb(c) as unknown as number[];
         }
         const dark = luminance(bg) < 128;
