@@ -16,7 +16,7 @@ import { LocationIterator, PositionLocation } from '../../util/location-iterator
 import { createColors } from '../color-data';
 import { ChunkedArray, hashFnv32a, invertCantorPairing, sortedCantorPairing } from '../../../mol-data/util';
 import { ParamDefinition as PD } from '../../../mol-util/param-definition';
-import { calculateInvariantBoundingSphere, calculateTransformBoundingSphere } from '../../../mol-gl/renderable/util';
+import { calculateInvariantBoundingSphere, calculateTransformBoundingSphere, TextureImage } from '../../../mol-gl/renderable/util';
 import { Theme } from '../../../mol-theme/theme';
 import { MeshValues } from '../../../mol-gl/renderable/mesh';
 import { Color } from '../../../mol-util/color';
@@ -51,6 +51,13 @@ export interface Mesh {
     readonly groupBuffer: ValueCell<Float32Array>,
     /** Indicates that group may vary within a triangle, wrapped in a value cell */
     readonly varyingGroup: ValueCell<boolean>,
+
+    /** Optional texture coordinates (uv per vertex), used together with `colorTexture` */
+    readonly texCoordBuffer: ValueCell<Float32Array>,
+    /** Optional RGBA color texture sampled with `texCoordBuffer`; its alpha blends the texel over the theme color */
+    readonly colorTexture: ValueCell<TextureImage<Uint8Array>>,
+    /** Whether `colorTexture` is used for rendering */
+    readonly useColorTexture: ValueCell<boolean>,
 
     /** Bounding sphere of the mesh */
     readonly boundingSphere: Sphere3D
@@ -103,6 +110,9 @@ export namespace Mesh {
             normalBuffer: ValueCell.create(normals),
             groupBuffer: ValueCell.create(groups),
             varyingGroup: ValueCell.create(false),
+            texCoordBuffer: ValueCell.create(new Float32Array(0)),
+            colorTexture: ValueCell.create<TextureImage<Uint8Array>>({ array: new Uint8Array(4), width: 1, height: 1 }),
+            useColorTexture: ValueCell.create(false),
             get boundingSphere() {
                 const newHash = hashCode(mesh);
                 if (newHash !== currentHash) {
@@ -139,6 +149,20 @@ export namespace Mesh {
         ValueCell.update(mesh.normalBuffer, normals);
         ValueCell.update(mesh.groupBuffer, groups);
         return mesh;
+    }
+
+    /**
+     * Attach a color texture: `texCoords` holds one uv pair (0..1) per vertex and `texture` is an RGBA image.
+     * Set `texture.flipY` when row 0 of the image is its top.
+     */
+    export function setColorTexture(mesh: Mesh, texCoords: Float32Array, texture: TextureImage<Uint8Array>) {
+        ValueCell.update(mesh.texCoordBuffer, texCoords);
+        ValueCell.update(mesh.colorTexture, texture);
+        ValueCell.updateIfChanged(mesh.useColorTexture, true);
+    }
+
+    export function clearColorTexture(mesh: Mesh) {
+        ValueCell.updateIfChanged(mesh.useColorTexture, false);
     }
 
     export function computeNormals(mesh: Mesh) {
@@ -707,6 +731,9 @@ export namespace Mesh {
             aGroup: mesh.groupBuffer,
             elements: mesh.indexBuffer,
             dVaryingGroup: mesh.varyingGroup,
+            aTexCoord: mesh.texCoordBuffer,
+            tColorTexture: mesh.colorTexture,
+            dColorTexture: mesh.useColorTexture,
             boundingSphere: ValueCell.create(boundingSphere),
             invariantBoundingSphere: ValueCell.create(invariantBoundingSphere),
             uInvariantBoundingSphere: ValueCell.create(Vec4.ofSphere(invariantBoundingSphere)),

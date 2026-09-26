@@ -23,6 +23,7 @@ import { loadMVSData } from '../../extensions/mvs/components/formats';
 import { PDBeStructureQualityReport } from '../../extensions/pdbe';
 import { RCSBValidationReport } from '../../extensions/rcsb';
 import { SbNcbrPartialCharges, SbNcbrTunnels } from '../../extensions/sb-ncbr';
+import { SurfStamp } from '../../extensions/surfstamp';
 import { wwPDBChemicalComponentDictionary } from '../../extensions/wwpdb/ccd/behavior';
 import { wwPDBStructConnExtensionFunctions } from '../../extensions/wwpdb/struct-conn';
 import { ZenodoImport } from '../../extensions/zenodo';
@@ -46,6 +47,7 @@ export const ExtensionMap = {
     'zenodo-import': PluginSpec.Behavior(ZenodoImport),
     'wwpdb-chemical-component-dictionary': PluginSpec.Behavior(wwPDBChemicalComponentDictionary),
     'kinemage': PluginSpec.Behavior(KinemageExtension),
+    'surfstamp': PluginSpec.Behavior(SurfStamp),
 
     // 3rd party extensions
     'pdbe-structure-quality-report': PluginSpec.Behavior(PDBeStructureQualityReport),

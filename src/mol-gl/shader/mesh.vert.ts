@@ -32,6 +32,11 @@ attribute float aInstance;
 
 varying vec3 vNormal;
 
+#ifdef dColorTexture
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+#endif
+
 void main(){
     int vertexId = VertexID;
 
@@ -55,5 +60,9 @@ void main(){
         }
     #endif
     vNormal = transformedNormal;
+
+    #ifdef dColorTexture
+        vTexCoord = aTexCoord;
+    #endif
 }
 `;

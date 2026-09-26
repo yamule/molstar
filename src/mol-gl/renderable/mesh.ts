@@ -7,7 +7,7 @@
 import { Renderable, RenderableState, createRenderable } from '../renderable';
 import { WebGLContext } from '../webgl/context';
 import { createGraphicsRenderItem, Transparency } from '../webgl/render-item';
-import { GlobalUniformSchema, BaseSchema, AttributeSpec, ElementsSpec, DefineSpec, Values, InternalSchema, InternalValues, GlobalTextureSchema, ValueSpec, UniformSpec, GlobalDefineSchema, GlobalDefineValues, GlobalDefines, InteriorSchema, AnimationSchema } from './schema';
+import { GlobalUniformSchema, BaseSchema, AttributeSpec, ElementsSpec, DefineSpec, Values, InternalSchema, InternalValues, GlobalTextureSchema, ValueSpec, UniformSpec, TextureSpec, GlobalDefineSchema, GlobalDefineValues, GlobalDefines, InteriorSchema, AnimationSchema } from './schema';
 import { MeshShaderCode } from '../shader-code';
 import { ValueCell } from '../../mol-util';
 
@@ -16,6 +16,8 @@ export const MeshSchema = {
     aGroup: AttributeSpec('float32', 1, 0),
     aPosition: AttributeSpec('float32', 3, 0),
     aNormal: AttributeSpec('float32', 3, 0),
+    /** optional texture coordinates, used when dColorTexture is set */
+    aTexCoord: AttributeSpec('float32', 2, 0),
     elements: ElementsSpec('uint32'),
     dVaryingGroup: DefineSpec('boolean'),
     dFlatShaded: DefineSpec('boolean'),
@@ -27,6 +29,9 @@ export const MeshSchema = {
     dTransparentBackfaces: DefineSpec('string', ['off', 'on', 'opaque']),
     uBumpFrequency: UniformSpec('f', 'material'),
     uBumpAmplitude: UniformSpec('f', 'material'),
+    /** optional RGBA color texture sampled with aTexCoord (alpha blends over the theme color) */
+    tColorTexture: TextureSpec('image-uint8', 'rgba', 'ubyte', 'linear'),
+    dColorTexture: DefineSpec('boolean'),
     meta: ValueSpec('unknown'),
 
     ...InteriorSchema,

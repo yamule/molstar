@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
+        "allowJs": true,
         "target": "es2018",
         "alwaysStrict": true,
         "noImplicitAny": true,

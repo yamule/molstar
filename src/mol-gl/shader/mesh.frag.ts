@@ -20,6 +20,11 @@ precision highp int;
 uniform vec4 uInteriorColor;
 uniform vec4 uInteriorSubstance;
 
+#ifdef dColorTexture
+    uniform sampler2D tColorTexture;
+    varying vec2 vTexCoord;
+#endif
+
 void main() {
     #include fade_lod
     #include clip_pixel
@@ -44,6 +49,13 @@ void main() {
     #endif
 
     #include assign_material_color
+
+    #if defined(dColorTexture) && (defined(dRenderVariant_color) || defined(dRenderVariant_tracing))
+        // texture color blended over the material (theme) color by the texel alpha
+        vec4 texel = texture2D(tColorTexture, vTexCoord);
+        material.rgb = mix(material.rgb, texel.rgb, texel.a);
+    #endif
+
     #include check_transparency
 
     #if defined(dRenderVariant_pick)
